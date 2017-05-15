@@ -37,33 +37,45 @@ def doSteg():
     #hide the message in the remaining bits of the message
     HideText(message);
 
-    for i in range((32/3) + 1):
-        print pixels[i];
-
-
     stegPic = Image.new(sourceImage.mode, sourceImage.size);
     stegPic.putdata(pixels);
 
     stegPic.save("dest.png");
     
-    
-    
-
+"""
+Converts the value of letter into bits
+Params:
+    letter: ord(char)
+Returns:
+    bits: list of numbers with values (0,1)
+"""
 def getBits(letter):
     bits = [];
     for i in range( 7, -1, -1):
         bits.append((letter >> i) & 1);
     return bits;
 
+"""
+Converts the interger value of num into bits
+Params:
+    num: int
+Returns:
+    bits: list of numbers with values (0,1)
+"""
 def getIntBits(num):
     bits = [];
     for i in range( 31, -1, -1):
         bits.append((num >> i) & 1);
     return bits;
 
+"""
+Hides the characters within message in an array of 3 byte pixel tuples
+Params:
+    messge: str
+"""
 def HideText(message):
-    pixIdx = 10;
-    tupIdx = 2;
+    pixIdx = 10;#Pixel 30-32
+    tupIdx = 2; #Pixel 32
     for letter in message:
         #convert to letter to number and then to bits
         bits = getBits(ord(letter));
@@ -75,13 +87,18 @@ def HideText(message):
             temp[tupIdx] = ((temp[tupIdx] & 0xfe) | bit);
             #update the tuple in pixels
             pixels[pixIdx] = tuple(temp);
-            #inc tupIdx, then if mods 3 update pixIdx and get new tuple
+            #inc tupIdx, then if mods 3 equals 0 update pixIdx and get next tuple
             tupIdx = tupIdx + 1;
             if tupIdx % 3 == 0:
                 tupIdx = 0;
                 pixIdx = pixIdx + 1;
                 temp = list(pixels[pixIdx]);
-                
+
+"""
+Hides the length of the message within the first 32 rgb values of pixels
+Params:
+    msgSize: int > 0
+"""
 def HideTextSize(msgSize):
     pixIdx = 0;
     tupIdx = 0;
